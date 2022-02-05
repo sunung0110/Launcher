@@ -37,7 +37,27 @@ void LaunchController::executeTask()
     }
 
     JavaCommon::checkJVMArgs(m_instance->settings()->get("JvmArgs").toString(), m_parentWidget);
+    
+    // Mojang account login bypass
+    QString usedname = "Player";
+    QString name = QInputDialog::getText(m_parentWidget, tr("Player name"),
+                                         tr("Choose your offline mode player name."),
+                                         QLineEdit::Normal, "Player", &ok);
+    if (!ok)
+    {
+        return;
+    }
+    if (name.length())
+    {
+        usedname = name;
+    }
+    m_session = std::make_shared<AuthSession>();
+    m_session->MakeOffline(usedname);
 
+    launchInstance();
+
+    // Original login code
+    /*
     login();
 }
 
@@ -205,11 +225,11 @@ void LaunchController::login() {
                 continue;
             }
             // FIXME: this is missing - the meaning is that the account is queued for refresh and we should wait for that
-            /*
+            /
             case AccountState::Queued: {
                 return;
             }
-            */
+            /
             case AccountState::Expired: {
                 auto errorString = tr("The account has expired and needs to be logged into manually again.");
                 QMessageBox::warning(
@@ -236,7 +256,7 @@ void LaunchController::login() {
             }
         }
     }
-    emitFailed(tr("Failed to launch."));
+    emitFailed(tr("Failed to launch."));*/
 }
 
 void LaunchController::launchInstance()
